@@ -1,0 +1,10 @@
+[
+    {
+        "operation": "create",
+        "serviceName": "Bridge Rescue",
+        "serviceDescription": "Detects stuck or failed cross-chain bridge transfers and returns a clear recovery path (claim on destination chain, retry, or source-chain refund) across Across, Stargate, Arbitrum, Synapse, and OKX Bridge. Part of the On-Chain Risk Suite.",
+        "serviceType": "A2MCP",
+        "fee": "0.01",
+        "endpoint": "https://bridge-rescue.onrender.com/v1/bridge-rescue"
+    }
+]

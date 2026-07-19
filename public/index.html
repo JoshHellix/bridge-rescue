@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bridge Rescue — Stuck Bridge Fund Recovery</title>
+    <meta name="description"
+        content="Detect stuck or failed cross-chain bridge transfers and get a clear recovery path. Pay-per-call A2MCP agent on OKX.AI. Part of the On-Chain Risk Suite." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        ink: { 950: '#04070d', 900: '#070b14', 850: '#0a1019', 800: '#0e1626', 700: '#13203a' },
+                        amber: { DEFAULT: '#fbbf24', soft: '#fcd34d' },
+                        teal: { DEFAULT: '#2dd4bf', soft: '#5eead4' },
+                        line: '#1c2c4a',
+                    },
+                    boxShadow: { glow: '0 0 40px rgba(251,191,36,.22)', 'glow-lg': '0 0 80px rgba(45,212,191,.30)' },
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: #04070d;
+            color: #e8eefc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden
+        }
+
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .aurora {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(60vw 60vw at 15% 10%, rgba(251, 191, 36, .10), transparent 60%),
+                radial-gradient(55vw 55vw at 85% 20%, rgba(45, 212, 191, .10), transparent 60%),
+                radial-gradient(50vw 50vw at 50% 100%, rgba(96, 165, 250, .08), transparent 60%);
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(20, 32, 58, .55), rgba(10, 16, 25, .55));
+            border: 1px solid #1c2c4a;
+            backdrop-filter: blur(8px);
+        }
+
+        .chip {
+            border: 1px solid #1c2c4a;
+            background: rgba(14, 22, 38, .6);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #04070d;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(251, 191, 36, .45);
+        }
+
+        .btn-ghost {
+            border: 1px solid #1c2c4a;
+            color: #cdd9f0;
+        }
+
+        .btn-ghost:hover {
+            border-color: #2dd4bf;
+            color: #5eead4;
+        }
+
+        .input {
+            background: rgba(7, 11, 20, .8);
+            border: 1px solid #1c2c4a;
+            color: #e8eefc;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #2dd4bf;
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, .15);
+        }
+
+        .status-STUCK {
+            color: #fbbf24;
+        }
+
+        .status-FAILED {
+            color: #f87171;
+        }
+
+        .status-COMPLETED {
+            color: #34d399;
+        }
+
+        .status-UNKNOWN {
+            color: #94a3b8;
+        }
+
+        .pulse {
+            animation: pulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: .55
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <div class="aurora"></div>
+
+    <!-- Nav -->
+    <header class="sticky top-0 z-30 backdrop-blur bg-ink-950/70 border-b border-line">
+        <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl grid place-items-center btn-primary"><i class="fa-solid fa-bridge"></i>
+                </div>
+                <span class="font-display font-bold text-lg">Bridge Rescue</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-7 text-sm text-slate-300">
+                <a href="#how" class="hover:text-amber-soft transition">How it works</a>
+                <a href="#bridges" class="hover:text-amber-soft transition">Supported</a>
+                <a href="#try" class="hover:text-amber-soft transition">Try it</a>
+            </nav>
+            <a href="#try" class="btn-primary px-4 py-2 rounded-lg text-sm">Run a scan</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="max-w-6xl mx-auto px-5 pt-20 pb-16 grid md:grid-cols-2 gap-12 items-center">
+        <div data-aos="fade-right">
+            <div class="chip inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs text-teal-soft mb-5">
+                <span class="w-2 h-2 rounded-full bg-teal-soft pulse"></span> On-Chain Risk Suite · A2MCP
+            </div>
+            <h1 class="font-display text-4xl md:text-5xl font-bold leading-tight">
+                Your bridge funds are <span class="text-amber-soft">stuck</span>.<br />Here's exactly what to do.
+            </h1>
+            <p class="text-slate-300 mt-5 text-lg">
+                Paste a transaction hash or wallet. Bridge Rescue detects failed or stuck cross-chain
+                transfers and returns a clear recovery path — claim on the destination chain, retry,
+                or request a source-chain refund. No guessing, no lost funds.
+            </p>
+            <div class="flex flex-wrap gap-3 mt-7">
+                <a href="#try" class="btn-primary px-5 py-3 rounded-xl">Run a scan</a>
+                <a href="#how" class="btn-ghost px-5 py-3 rounded-xl">See how it works</a>
+            </div>
+            <div class="flex gap-6 mt-8 text-sm text-slate-400">
+                <div><span class="font-display text-amber-soft text-xl font-bold">$0.01</span><br />per paid call</div>
+                <div><span class="font-display text-teal-soft text-xl font-bold">5+</span><br />bridge protocols</div>
+                <div><span class="font-display text-blue-300 text-xl font-bold">x402</span><br />pay-per-use</div>
+            </div>
+        </div>
+        <div data-aos="fade-left" class="card rounded-2xl p-6 shadow-glow-lg">
+            <div class="flex items-center gap-2 text-xs text-slate-400 mb-4">
+                <i class="fa-solid fa-terminal"></i> live recovery readout
+            </div>
+            <pre class="font-mono text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">{
+  "status": "STUCK",
+  "bridge": "Across",
+  "recoveryPath": "Source transfer confirmed, destination
+  claim missing. Open Across claim UI on the
+  destination chain with this wallet.",
+  "action": "Claim with tx 0x9f…a3 on destination chain",
+  "confidence": 0.85
+}</pre>
+            <div class="mt-4 flex items-center gap-2 text-xs">
+                <span class="w-2 h-2 rounded-full bg-amber-soft pulse"></span>
+                <span class="text-amber-soft">STUCK — recovery available</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how" class="max-w-6xl mx-auto px-5 py-16">
+        <h2 class="font-display text-3xl font-bold text-center mb-12">How Bridge Rescue works</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="card rounded-2xl p-6" data-aos="fade-up">
+                <div class="w-11 h-11 rounded-xl grid place-items-center btn-ghost mb-4"><i
+                        class="fa-solid fa-link text-amber-soft"></i></div>
+                <h3 class="font-display font-semibold text-lg mb-2">1. Detect</h3>
+                <p class="text-slate-300 text-sm">We read the source-chain transaction and classify it as FAILED, STUCK,
+                    PENDING, or COMPLETED using public RPC — no API keys needed.</p>
+            </div>
+            <div class="card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-11 h-11 rounded-xl grid place-items-center btn-ghost mb-4"><i
+                        class="fa-solid fa-route text-teal-soft"></i></div>
+                <h3 class="font-display font-semibold text-lg mb-2">2. Resolve</h3>
+                <p class="text-slate-300 text-sm">We identify the exact bridge protocol and the correct recovery path:
+                    destination-chain claim, retry, or source-chain refund.</p>
+            </div>
+            <div class="card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-11 h-11 rounded-xl grid place-items-center btn-ghost mb-4"><i
+                        class="fa-solid fa-circle-check text-blue-300"></i></div>
+                <h3 class="font-display font-semibold text-lg mb-2">3. Recover</h3>
+                <p class="text-slate-300 text-sm">You get a plain-English action plus the evidence, so you can claim or
+                    retry with confidence — and get your funds back.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supported bridges -->
+    <section id="bridges" class="max-w-6xl mx-auto px-5 py-16">
+        <h2 class="font-display text-3xl font-bold text-center mb-10">Supported bridges</h2>
+        <div class="flex flex-wrap justify-center gap-3">
+            <span class="chip px-4 py-2 rounded-full text-sm">Across</span>
+            <span class="chip px-4 py-2 rounded-full text-sm">Stargate / LayerZero</span>
+            <span class="chip px-4 py-2 rounded-full text-sm">Arbitrum Bridge</span>
+            <span class="chip px-4 py-2 rounded-full text-sm">Synapse</span>
+            <span class="chip px-4 py-2 rounded-full text-sm">OKX Bridge</span>
+            <span class="chip px-4 py-2 rounded-full text-sm">Polygon PoS Bridge</span>
+        </div>
+        <p class="text-center text-slate-400 text-sm mt-6 max-w-2xl mx-auto">
+            Works across Ethereum, Base, Arbitrum, Polygon, BNB Chain, Optimism, Avalanche, and X Layer.
+            Detection is read-only against public RPC endpoints.
+        </p>
+    </section>
+
+    <!-- Try it -->
+    <section id="try" class="max-w-3xl mx-auto px-5 py-16">
+        <div class="card rounded-2xl p-8 shadow-glow">
+            <h2 class="font-display text-2xl font-bold mb-2">Run a Bridge Rescue scan</h2>
+            <p class="text-slate-300 text-sm mb-6">Paste a transaction hash or a wallet address. The preview is free;
+                the full recovery path is a paid x402 call ($0.01 USDT on X Layer).</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400">Chain</label>
+                    <select id="chain" class="input w-full rounded-lg px-3 py-2 mt-1">
+                        <option value="ethereum">Ethereum</option>
+                        <option value="base">Base</option>
+                        <option value="arbitrum">Arbitrum</option>
+                        <option value="polygon">Polygon</option>
+                        <option value="bsc">BNB Chain</option>
+                        <option value="optimism">Optimism</option>
+                        <option value="avalanche">Avalanche</option>
+                        <option value="xlayer">X Layer</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-slate-400">Transaction hash or wallet</label>
+                    <input id="input" class="input w-full rounded-lg px-3 py-2 mt-1 font-mono text-sm"
+                        placeholder="0x… (tx hash) or 0x… (wallet)" />
+                </div>
+                <div class="flex gap-3">
+                    <button id="previewBtn" class="btn-ghost px-4 py-2 rounded-lg text-sm flex-1">Free preview</button>
+                    <button id="paidBtn" class="btn-primary px-4 py-2 rounded-lg text-sm flex-1">Paid recovery
+                        ($0.01)</button>
+                </div>
+            </div>
+            <div id="result" class="mt-6 font-mono text-sm text-slate-200 whitespace-pre-wrap hidden"></div>
+        </div>
+    </section>
+
+    <footer class="border-t border-line mt-10">
+        <div
+            class="max-w-6xl mx-auto px-5 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg grid place-items-center btn-primary"><i class="fa-solid fa-bridge"></i>
+                </div> Bridge Rescue · On-Chain Risk Suite
+            </div>
+            <div>Part of the OKX.AI Marketplace · x402 pay-per-call</div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 600, once: true });
+        const $ = (id) => document.getElementById(id);
+        const result = $("result");
+        function show(obj) { result.classList.remove("hidden"); result.textContent = JSON.stringify(obj, null, 2); }
+        $("previewBtn").onclick = async () => {
+            const chain = $("chain").value, val = $("input").value.trim();
+            if (!val) return alert("Enter a tx hash or wallet.");
+            const body = { chain }; (val.length === 66 ? body.txHash : body.wallet) = val;
+            const r = await fetch("/v1/bridge-rescue/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            show(await r.json());
+        };
+        $("paidBtn").onclick = async () => {
+            const chain = $("chain").value, val = $("input").value.trim();
+            if (!val) return alert("Enter a tx hash or wallet.");
+            const body = { chain }; (val.length === 66 ? body.txHash : body.wallet) = val;
+            const r = await fetch("/v1/bridge-rescue", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+            show(await r.json());
+        };
+    </script>
+</body>
+
+</html>
