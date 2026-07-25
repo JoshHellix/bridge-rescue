@@ -1,0 +1,28 @@
+{
+    "envVars": [
+        {
+            "key": "OKX_API_KEY",
+            "value": "f0a25b23-3cb6-4e9d-8e5d-eaaf567f259b"
+        },
+        {
+            "key": "OKX_SECRET_KEY",
+            "value": "B86DAAC7E31747F6752621AC4A93D74A"
+        },
+        {
+            "key": "OKX_PASSPHRASE",
+            "value": "Joshuachristopher@1"
+        },
+        {
+            "key": "PAY_TO_ADDRESS",
+            "value": "0x7716ea8a6c001afe4bc77e277e902a2676e8d527"
+        },
+        {
+            "key": "PRICE_USD",
+            "value": "0.01"
+        },
+        {
+            "key": "PUBLIC_URL",
+            "value": "https://chain-years.onrender.com"
+        }
+    ]
+}

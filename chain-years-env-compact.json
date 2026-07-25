@@ -1,0 +1,44 @@
+{
+    "envVars": [
+        {
+            "key": "COVALENT_KEY",
+            "value": "cqt_rQKrD6Mc87JwqYwjQMTVcV7pwrY4"
+        },
+        {
+            "key": "ANKR_API_KEY",
+            "value": "2dd67d3f2f26d10d90ef4452fee6ea34f6c53afbd8e07c7041313867549f2bba"
+        },
+        {
+            "key": "ETHERSCAN_KEY",
+            "value": "C1SSVNCCH1DIEMETPC5DG8XJSYGKS2NNXD"
+        },
+        {
+            "key": "PORT",
+            "value": "3000"
+        },
+        {
+            "key": "PRICE_USD",
+            "value": "0.01"
+        },
+        {
+            "key": "PAY_TO_ADDRESS",
+            "value": "0x7716ea8a6c001afe4bc77e277e902a2676e8d527"
+        },
+        {
+            "key": "OKX_API_KEY",
+            "value": "f0a25b23-3cb6-4e9d-8e5d-eaaf567f259b"
+        },
+        {
+            "key": "OKX_SECRET_KEY",
+            "value": "f0a25b23-3cb6-4e9d-8e5d-eaaf567f259b"
+        },
+        {
+            "key": "OKX_PASSPHRASE",
+            "value": "Joshuachristopher@1"
+        },
+        {
+            "key": "PUBLIC_URL",
+            "value": "https://chain-years.onrender.com"
+        }
+    ]
+}
